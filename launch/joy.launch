@@ -1,0 +1,9 @@
+<launch>
+  
+  <!--Control node -->
+  <node pkg="turtlebro_joy" type="turtlebro_joy.py" name="turtlebro_joy" output="screen" required="true" />
+  
+  <!-- Run joy packege -->
+  <include file="$(find joy)/launch/ps4joy.launch"/>
+
+</launch>  
