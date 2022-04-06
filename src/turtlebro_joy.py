@@ -12,8 +12,6 @@ def callback(msg):
     linear = cd(msg.axes[1], -1.0, 1.0, -0.2, 0.2)
     angular = cd(msg.axes[0], -1.0, 1.0, -1.5, 1.5)
     vel(linear, angular)
-    
-rospy.Subscriber("/joy_orig", Joy, callback)
 
 def cd(old, old_min, old_max, new_min, new_max):
     new = (((old - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min
@@ -24,5 +22,7 @@ def vel(velx, velz):
     pub_vel.linear.x = velx
     pub_vel.angular.z = velz
     pub.publish(pub_vel)
+
+rospy.Subscriber("/joy_orig", Joy, callback)
 
 rospy.spin()
