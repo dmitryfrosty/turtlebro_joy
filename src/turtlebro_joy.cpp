@@ -1,50 +1,36 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "sensor_msgs/Joy.h"
+#include "geometry_msgs/Twist.h"
 
-#include <sstream>
+ros::Publisher pub;
+
+float cd(float old, float old_min, float old_max, float new_min, float new_max)
+{
+  float new_value = (((old - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min;
+  return(new_value);
+}
+
+void vel(float velx, float velz)
+{
+  geometry_msgs::Twist pub_vel;
+  pub_vel.linear.x = velx;
+  pub_vel.angular.z = velz;
+  pub.publish(pub_vel);
+}
+
+void Callback(sensor_msgs::Joy msg)
+{
+  float linear = cd(msg.axes[1], -1.0, 1.0, -0.2, 0.2);
+  float angular = cd(msg.axes[0], -1.0, 1.0, -1.5, 1.5);
+  vel(linear, angular);
+}
 
 int main(int argc, char **argv)
-{
-  ros::init(argc, argv, "talker");
+{ 
+  ros::init(argc, argv, "turtlebro_joy");
   ros::NodeHandle n;
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
-  ros::Rate loop_rate(10);
-  int count = 0;
-  while (ros::ok())
-  {
-    std_msgs::String msg;
-
-    std::stringstream ss;
-    ss << "hello world " << count;
-    msg.data = ss.str();
-
-    ROS_INFO("%s", msg.data.c_str());
-    chatter_pub.publish(msg);
-
-    ros::spinOnce();
-
-    loop_rate.sleep();
-    ++count;
-  }
-
-
+  pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+  ros::Subscriber sub = n.subscribe("joy_orig", 1000, Callback);
+  ros::spin();
   return 0;
-}
-
-
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-
-void chatterCallback(const std_msgs::String::ConstPtr& msg)
-{
-  ROS_INFO("I heard: [%s]", msg->data.c_str());
-}
-
-int main(int argc, char **argv)
-{
-    ros::init(argc, argv, "listener");
-    ros::NodeHandle n;
-    ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
-    ros::spin();
-    return 0;
 }
