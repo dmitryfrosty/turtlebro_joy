@@ -4,7 +4,7 @@
 
 ros::Publisher pub;
 
-float cd(float old, float old_min, float old_max, float new_min, float new_max)
+float conversion(float old, float old_min, float old_max, float new_min, float new_max)
 {
   float new_value = (((old - old_min) * (new_max - new_min)) / (old_max - old_min)) + new_min;
   return(new_value);
@@ -20,8 +20,8 @@ void vel(float velx, float velz)
 
 void Callback(sensor_msgs::Joy msg)
 {
-  float linear = cd(msg.axes[1], -1.0, 1.0, -0.2, 0.2);
-  float angular = cd(msg.axes[0], -1.0, 1.0, -1.5, 1.5);
+  float linear = conversion(msg.axes[1], -1.0, 1.0, -0.2, 0.2);
+  float angular = conversion(msg.axes[0], -1.0, 1.0, -1.5, 1.5);
   vel(linear, angular);
 }
 
