@@ -7,3 +7,4 @@ For the joystick to work, you need to install:
 ```
 sudo apt-get install libspnav-dev
 ```
+I use a logitech attack 3 joystick
