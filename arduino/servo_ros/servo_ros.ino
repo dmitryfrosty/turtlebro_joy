@@ -3,6 +3,7 @@
 #include <Servo.h>
 
 Servo servo_cam;
+Servo servo_hand;
 
 class NewHardware : public ArduinoHardware    //для работы связи ардуино и разбери на роботе
 {
@@ -11,16 +12,23 @@ class NewHardware : public ArduinoHardware    //для работы связи �
 };
 ros::NodeHandle_<NewHardware>  nh;
 
-void messageCb(const std_msgs::Int16 & toggle_msg){ 
+void servocam(const std_msgs::Int16 & toggle_msg){ 
   servo_cam.write(toggle_msg.data);
 }
 
-ros::Subscriber<std_msgs::Int16> sub("servo_cam", &messageCb ); 
+void servohand(const std_msgs::Int16 & toggle_msg){ 
+  servo_hand.write(toggle_msg.data);
+}
+
+ros::Subscriber<std_msgs::Int16> subcam("servo_cam", &servocam );
+ros::Subscriber<std_msgs::Int16> subhand("servo_hand", &servohand );
 
 void setup(){
   servo_cam.attach(45);
+  servo_hand.attach(46);
   nh.initNode();     //создаём ноду 
-  nh.subscribe(sub);
+  nh.subscribe(subcam);
+  nh.subscribe(subhand);
 }
 
 void loop(){
